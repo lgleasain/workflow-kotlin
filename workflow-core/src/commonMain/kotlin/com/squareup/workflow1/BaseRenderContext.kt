@@ -1,4 +1,4 @@
-@file:Suppress("EXPERIMENTAL_API_USAGE")
+@file:Suppress("EXPERIMENTAL_API_USAGE", "TYPE_VARIANCE_CONFLICT_WARNING")
 @file:JvmMultifileClass
 @file:JvmName("Workflows")
 

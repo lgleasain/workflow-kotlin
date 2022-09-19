@@ -8,6 +8,7 @@ import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -50,8 +51,8 @@ import com.squareup.sample.compose.R
           Text(stringResource(R.string.app_name))
         })
       }
-    ) {
-      LazyColumn {
+    ) { padding ->
+      LazyColumn(Modifier.padding(padding)) {
         items(samples) {
           SampleItem(it)
         }
