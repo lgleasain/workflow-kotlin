@@ -1,6 +1,7 @@
-import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.dokka.gradle.AbstractDokkaLeafTask
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+import java.net.URL
 
 buildscript {
   dependencies {
@@ -61,14 +62,45 @@ apply(plugin = "org.jetbrains.dokka")
 // Configuration that applies to all dokka tasks, both those used for generating javadoc artifacts
 // and the documentation site.
 subprojects {
-  tasks.withType<DokkaTask>().configureEach {
+  tasks.withType<AbstractDokkaLeafTask> {
+
+    moduleName.set(
+      provider {
+        findProperty("POM_ARTIFACT_ID") as? String ?: project.path.removePrefix(":")
+      }
+    )
+
     dokkaSourceSets.configureEach {
+
+      val dokkaSourceSet = this
+
       reportUndocumented.set(false)
       skipDeprecated.set(true)
-      jdkVersion.set(8)
 
-      // TODO(#124) Add source links.
+      if (file("src/${dokkaSourceSet.name}").exists()) {
 
+        val readmeFile = file("$projectDir/README.md")
+
+        if (readmeFile.exists()) {
+          includes.from(readmeFile)
+        }
+
+        sourceLink {
+          localDirectory.set(file("src/${dokkaSourceSet.name}"))
+
+          val modulePath = project.path.replace(":", "/")
+            .replaceFirst("/", "")
+
+          // URL showing where the source code can be accessed through the web browser
+          remoteUrl.set(
+            URL(
+              "https://github.com/square/workflow-kotlin/blob/main/$modulePath/src/${dokkaSourceSet.name}"
+            )
+          )
+          // Suffix which is used to append the line number to the URL. Use #L for GitHub
+          remoteLineSuffix.set("#L")
+        }
+      }
       perPackageOption {
         // Will match all .internal packages and sub-packages, regardless of module.
         matchingRegex.set(""".*\.internal.*""")
